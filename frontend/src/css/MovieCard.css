@@ -48,29 +48,58 @@
   opacity: 1;
 }
 
-.favorite-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  color: white;
-  font-size: 1.5rem;
-  padding: 0.5rem;
-  background-color: rgba(0, 0, 0, 0.5);
+.button-group {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.5rem 1rem;
+  background-color: #1a1a1a;
+}
+
+.favorite-btn,
+.recommend-btn {
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
+  color: white;
   width: 40px;
   height: 40px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s;
+  padding: 0;
+  backdrop-filter: blur(4px);
 }
 
-.favorite-btn:hover {
-  background-color: rgba(0, 0, 0, 0.8);
+.favorite-btn:hover,
+.recommend-btn:hover {
+  transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .favorite-btn.active {
-  color: #ff4757;
+  color: #ff4081;
+  border-color: rgba(255, 64, 129, 0.4);
+}
+
+.recommend-btn {
+  position: relative;
+  color: #ffd700;
+  font-size: 1.5rem;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 2px;
+}
+
+.recommend-btn:hover {
+  color: #ffed4a;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
 }
 
 .rating-select {
@@ -84,7 +113,7 @@
 }
 
 .movie-info {
-  padding: 1rem;
+  padding: 0.5rem 1rem 1rem;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -121,4 +150,51 @@
     height: 32px;
     font-size: 1.2rem;
   }
+}
+
+/* Custom tooltip styling */
+.recommend-btn {
+  position: relative;
+}
+
+.recommend-btn:hover::after {
+  content: attr(title);
+  position: absolute;
+  top: -45px;
+  right: 0;
+  transform: translateY(0);
+  padding: 6px 12px;
+  background-color: rgba(0, 0, 0, 0.9);
+  color: white;
+  font-size: 13px;
+  white-space: nowrap;
+  border-radius: 4px;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.recommend-btn:hover::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  transform: rotate(0deg);
+  border: 5px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.9);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Remove general tooltip styles */
+[title] {
+  position: relative;
+}
+
+/* Update card size */
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Increased from 200px */
+  gap: 2rem;
+  padding: 1rem;
 }

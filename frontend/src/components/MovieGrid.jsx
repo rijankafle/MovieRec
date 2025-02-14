@@ -1,6 +1,6 @@
 import MovieCard from './MovieCard';
 
-function MovieGrid({ movies, error, loading }) {
+function MovieGrid({ movies, error, loading, onRecommendations }) {
   if (loading) {
     return (
       <div className="loading-overlay">
@@ -16,7 +16,11 @@ function MovieGrid({ movies, error, loading }) {
   return (
     <div className="movies-grid">
       {movies.map((movie) => (
-        <MovieCard key={movie.id} movie={movie} />
+        <MovieCard 
+          key={movie.id} 
+          movie={movie} 
+          onRecommendations={onRecommendations}
+        />
       ))}
     </div>
   );
