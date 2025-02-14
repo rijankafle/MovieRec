@@ -1,108 +1,66 @@
-import MovieCard from "../components/MovieCard";
 import { useState, useEffect, useCallback } from "react";
+import { getTrendingMovies, searchMovies } from "../services/api";
+import TrendingToggle from "../components/TrendingToggle";
+import SearchBar from "../components/SearchBar";
+import MovieGrid from "../components/MovieGrid";
 import "../css/Home.css";
-import { getPopularMovies, searchMovies } from "../services/api";
 
-function Home() { 
+function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [timeWindow, setTimeWindow] = useState('week');
 
-  // Load initial popular movies
-  useEffect(() => {
-    const loadPopularMovies = async () => {
-      try {
-        const popularMovies = await getPopularMovies();
-        setMovies(popularMovies);
-        setError(null);
-      } catch (error) {
-        console.error(error);
-        setError("Failed to load popular movies");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadPopularMovies();
-  }, []);
-
-  // Debounce search query
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-    }, 500); // Wait 500ms after user stops typing
-
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
-
-  // Perform search when debounced query changes
-  const performSearch = useCallback(async (query) => {
-    if (!query.trim()) {
-      // If search is cleared, load popular movies
-      try {
-        setIsSearching(true);
-        const popularMovies = await getPopularMovies();
-        setMovies(popularMovies);
-        setError(null);
-      } catch (error) {
-        console.error(error);
-        setError("Failed to load popular movies");
-      } finally {
-        setIsSearching(false);
-      }
-      return;
-    }
-
+  const loadMovies = useCallback(async (query = "") => {
     try {
       setIsSearching(true);
-      const searchResults = await searchMovies(query);
-      setMovies(searchResults);
-      setError(null);
+      const results = query.trim()
+        ? await searchMovies(query)
+        : await getTrendingMovies(timeWindow);
       
-      if (searchResults.length === 0) {
-        setError("No movies found matching your search");
-      }
+      setMovies(results);
+      setError(results.length === 0 ? "No movies found" : null);
     } catch (error) {
       console.error(error);
-      setError("Failed to search movies");
+      setError("Failed to load movies");
     } finally {
       setIsSearching(false);
+      setLoading(false);
     }
-  }, []);
+  }, [timeWindow]);
 
-  // Effect for performing search
+  // Load initial movies
   useEffect(() => {
-    performSearch(debouncedQuery);
-  }, [debouncedQuery, performSearch]);
+    loadMovies();
+  }, [timeWindow, loadMovies]);
+
+  // Debounced search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      loadMovies(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, loadMovies]);
 
   return (
     <div className="home">
-      <div className="search-container">
-        <input
-          type="text"
-          placeholder="Search for movies..."
-          className="search-input"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        {isSearching && <div className="search-spinner">🔄</div>}
-      </div>
-
-      {error && <p className="error-message">{error}</p>}
-
-      {loading ? (
-        <div className="loading-overlay">
-          <div className="loading-spinner">Loading...</div>
-        </div>
-      ) : (
-        <div className="movies-grid">
-          {movies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
-          ))}
-        </div>
-      )}
+      <TrendingToggle 
+        timeWindow={timeWindow}
+        onToggle={() => setTimeWindow(prev => prev === 'week' ? 'day' : 'week')}
+      />
+      <SearchBar 
+        value={searchQuery}
+        onChange={setSearchQuery}
+        isSearching={isSearching}
+      />
+      <MovieGrid 
+        movies={movies}
+        error={error}
+        loading={loading}
+      />
     </div>
   );
 }
