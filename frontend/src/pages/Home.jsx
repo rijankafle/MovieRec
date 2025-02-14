@@ -1,76 +1,101 @@
 import MovieCard from "../components/MovieCard";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import "../css/Home.css";
 import { getPopularMovies, searchMovies } from "../services/api";
-import { useEffect } from "react";
 
-function Home() {
+function Home() { 
   const [searchQuery, setSearchQuery] = useState("");
-
   const [movies, setMovies] = useState([]);
-
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
+  // Load initial popular movies
   useEffect(() => {
-    const loadMovies = async () => {
+    const loadPopularMovies = async () => {
       try {
         const popularMovies = await getPopularMovies();
         setMovies(popularMovies);
+        setError(null);
       } catch (error) {
-        console.log(error);
-        setError("Failed to load movies");
+        console.error(error);
+        setError("Failed to load popular movies");
       } finally {
         setLoading(false);
       }
     };
-    loadMovies();
+    loadPopularMovies();
   }, []);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) {
+  // Debounce search query
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 500); // Wait 500ms after user stops typing
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  // Perform search when debounced query changes
+  const performSearch = useCallback(async (query) => {
+    if (!query.trim()) {
+      // If search is cleared, load popular movies
+      try {
+        setIsSearching(true);
+        const popularMovies = await getPopularMovies();
+        setMovies(popularMovies);
+        setError(null);
+      } catch (error) {
+        console.error(error);
+        setError("Failed to load popular movies");
+      } finally {
+        setIsSearching(false);
+      }
       return;
     }
 
-    if (loading) return;
-    setLoading(true);
-
     try {
-      searchMovies(searchQuery).then((movies) => {
-        setMovies(movies);
-        setError(null);
-      });
+      setIsSearching(true);
+      const searchResults = await searchMovies(query);
+      setMovies(searchResults);
+      setError(null);
+      
+      if (searchResults.length === 0) {
+        setError("No movies found matching your search");
+      }
     } catch (error) {
-      console.log(error);
-      setError("Failed to load movies");
+      console.error(error);
+      setError("Failed to search movies");
     } finally {
-      setLoading(false);
+      setIsSearching(false);
     }
+  }, []);
 
-    setSearchQuery("");
-  };
+  // Effect for performing search
+  useEffect(() => {
+    performSearch(debouncedQuery);
+  }, [debouncedQuery, performSearch]);
 
   return (
     <div className="home">
-      <form onSubmit={handleSearch} className="search-form">
+      <div className="search-container">
         <input
           type="text"
-          placeholder="Search for movies...."
+          placeholder="Search for movies..."
           className="search-input"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
+        {isSearching && <div className="search-spinner">🔄</div>}
+      </div>
 
-        <button type="submit" className="search-button">
-          Search
-        </button>
-      </form>
-
-      {error && <p className="error">{error}</p>}
+      {error && <p className="error-message">{error}</p>}
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="loading-overlay">
+          <div className="loading-spinner">Loading...</div>
+        </div>
       ) : (
         <div className="movies-grid">
           {movies.map((movie) => (
