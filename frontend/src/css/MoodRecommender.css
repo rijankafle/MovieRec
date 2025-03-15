@@ -1,0 +1,139 @@
+.mood-recommender {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mood-recommender h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.4rem;
+}
+
+.mood-description {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.mood-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mood-input {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.mood-controls {
+  display: flex;
+  gap: 1rem;
+}
+
+.voice-btn,
+.recommend-mood-btn {
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.voice-btn {
+  background-color: #f1f1f1;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.voice-btn.listening {
+  background-color: #ff4d4d;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+.recommend-mood-btn {
+  background-color: #007bff;
+  color: white;
+  flex: 1;
+}
+
+.recommend-mood-btn:hover {
+  background-color: #0069d9;
+}
+
+.voice-btn:hover:not(:disabled) {
+  background-color: #e2e2e2;
+}
+
+.voice-btn:disabled,
+.recommend-mood-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mood-error {
+  color: #dc3545;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.listening-indicator {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: rgba(255, 77, 77, 0.1);
+  border-radius: 4px;
+  text-align: center;
+  color: #ff4d4d;
+  animation: pulse 1.5s infinite;
+}
+
+.processing-indicator {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: rgba(0, 123, 255, 0.1);
+  border-radius: 4px;
+  text-align: center;
+  color: #007bff;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .mood-input-container {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .mood-input {
+    flex: 1;
+  }
+
+  .mood-controls {
+    flex-direction: column;
+    width: 180px;
+  }
+}

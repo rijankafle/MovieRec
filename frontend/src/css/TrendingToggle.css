@@ -1,0 +1,153 @@
+/* Container for the entire toggle component */
+.trending-toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0;
+  user-select: none;
+}
+
+/* Trending label */
+.trending-label {
+  font-weight: 600;
+  font-size: 16px;
+  color: #e0e0e0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Wrapper for the toggle elements */
+.toggle-wrapper {
+  position: relative;
+  background: rgba(30, 30, 35, 0.8);
+  border-radius: 24px;
+  padding: 3px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid #333;
+}
+
+/* Container for the toggle options */
+.toggle-options {
+  position: relative;
+  display: flex;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+/* Individual toggle option */
+.toggle-option {
+  position: relative;
+  padding: 8px 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 2;
+  transition: color 0.3s ease;
+  color: #b0b0b0;
+  min-width: 100px;
+  text-align: center;
+  /* Remove outline */
+  outline: none;
+}
+
+/* Remove default focus outline and add custom focus style */
+.toggle-option:focus {
+  outline: none;
+}
+
+.toggle-option:focus-visible {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+}
+
+/* Handle hover effects */
+.toggle-option:hover:not(.active) {
+  color: #ffffff;
+}
+
+/* Style for the active toggle option */
+.toggle-option.active {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Animated background that slides between options */
+.active-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(135deg, #e50914, #b81d24);
+  border-radius: 22px;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* Improved easing */
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* Glow effect inside the active background */
+.glow-effect {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Position for the right side */
+.active-background.right {
+  transform: translateX(100%);
+}
+
+/* Position for the left side */
+.active-background.left {
+  transform: translateX(0);
+}
+
+/* Enhanced animation when switching */
+.toggle-options.animating .active-background {
+  box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
+}
+
+.toggle-options.animating .glow-effect {
+  animation: glow-pulse 0.5s ease-out;
+}
+
+@keyframes glow-pulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+
+/* Media query for mobile devices */
+@media (max-width: 600px) {
+  .trending-toggle-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toggle-option {
+    padding: 8px 16px;
+    min-width: 80px;
+    font-size: 13px;
+  }
+}
