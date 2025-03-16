@@ -1,7 +1,11 @@
 /**
- * MovieCard Component - Clean Icon Version
+ * MovieCard Component
  *
- * Uses standalone icons without backgrounds
+ * Displays a movie with:
+ * - Poster image
+ * - Title and metadata
+ * - Favorite toggle
+ * - Similar movies button (optional)
  */
 import { useState } from "react";
 import { useMovieContext } from "../context/MovieContext";
@@ -18,13 +22,16 @@ import { faHeart as farHeart } from "@fortawesome/free-regular-svg-icons";
 import "../css/MovieCard.css";
 
 function MovieCard({ movie, onRecommendations }) {
+  // State
   const [showDetails, setShowDetails] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  // Context
   const { favorites, addToFavorites, removeFromFavorites } = useMovieContext();
   const isFavorite = favorites.some((fav) => fav.id === movie.id);
 
-  // Handle favorite toggle
-  const handleFavoriteClick = (e) => {
+  // Event handlers
+  const handleFavoriteToggle = (e) => {
     e.stopPropagation();
     if (isFavorite) {
       removeFromFavorites(movie.id);
@@ -33,8 +40,7 @@ function MovieCard({ movie, onRecommendations }) {
     }
   };
 
-  // Get recommendations when requested
-  const handleGetSimilar = async (e) => {
+  const handleSimilarMoviesClick = async (e) => {
     e.stopPropagation();
     if (!onRecommendations) return;
 
@@ -46,6 +52,7 @@ function MovieCard({ movie, onRecommendations }) {
     }
   };
 
+  // Render movie card
   return (
     <>
       <div
@@ -54,7 +61,7 @@ function MovieCard({ movie, onRecommendations }) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Movie poster with clean overlay icons */}
+        {/* Poster */}
         <div className="movie-poster">
           {movie.poster_path ? (
             <img
@@ -65,13 +72,14 @@ function MovieCard({ movie, onRecommendations }) {
             <div className="no-poster">No Image</div>
           )}
 
-          {/* Clean standalone icons */}
+          {/* Action buttons */}
           <div className="card-actions">
+            {/* Favorite button */}
             <button
               className={`clean-icon favorite-icon ${
                 isFavorite ? "is-favorite" : ""
               }`}
-              onClick={handleFavoriteClick}
+              onClick={handleFavoriteToggle}
               aria-label={
                 isFavorite ? "Remove from favorites" : "Add to favorites"
               }
@@ -82,10 +90,11 @@ function MovieCard({ movie, onRecommendations }) {
               />
             </button>
 
+            {/* Similar movies button (conditionally rendered) */}
             {onRecommendations && (
               <button
                 className="clean-icon similar-icon"
-                onClick={handleGetSimilar}
+                onClick={handleSimilarMoviesClick}
                 aria-label="Find similar movies"
               >
                 <FontAwesomeIcon
@@ -96,13 +105,13 @@ function MovieCard({ movie, onRecommendations }) {
             )}
           </div>
 
-          {/* Hover overlay */}
+          {/* View details overlay */}
           <div className="movie-overlay">
             <span className="view-details">View Details</span>
           </div>
         </div>
 
-        {/* Movie details */}
+        {/* Movie metadata */}
         <div className="movie-details">
           <h3 className="movie-title">{movie.title}</h3>
           <div className="movie-meta">
@@ -123,7 +132,7 @@ function MovieCard({ movie, onRecommendations }) {
         </div>
       </div>
 
-      {/* Movie Details Modal */}
+      {/* Details modal (conditionally rendered) */}
       {showDetails && (
         <MovieDetails
           movieId={movie.id}

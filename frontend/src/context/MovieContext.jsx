@@ -1,9 +1,11 @@
 /**
  * Movie Context Provider
- * 
- * Manages global state for favorites and recommendations view
+ *
+ * Provides global state for:
+ * - Favorite movies
+ * - Recommendation mode status
  */
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback } from "react";
 
 // Create context
 const MovieContext = createContext();
@@ -14,54 +16,48 @@ export function useMovieContext() {
 }
 
 export function MovieProvider({ children }) {
-  // State for favorites
+  // Favorites state
   const [favorites, setFavorites] = useState([]);
-  
-  // State for recommendations mode
+
+  // Recommendations mode state
   const [recommendationsMode, setRecommendationsMode] = useState({
     active: false,
-    title: '',
+    title: "",
   });
 
-  // Add movie to favorites
+  // Add a movie to favorites (if not already added)
   const addToFavorites = useCallback((movie) => {
-    setFavorites(prevFavorites => {
-      if (prevFavorites.some(m => m.id === movie.id)) {
-        return prevFavorites;
-      }
-      return [...prevFavorites, movie];
-    });
-  }, []);
-
-  // Remove movie from favorites
-  const removeFromFavorites = useCallback((movieId) => {
-    setFavorites(prevFavorites => 
-      prevFavorites.filter(movie => movie.id !== movieId)
+    setFavorites((prev) =>
+      prev.some((m) => m.id === movie.id) ? prev : [...prev, movie]
     );
   }, []);
 
-  // Set recommendations mode
-  const setRecommendations = useCallback((active, title = '') => {
+  // Remove movie from favorites by ID
+  const removeFromFavorites = useCallback((movieId) => {
+    setFavorites((prev) => prev.filter((movie) => movie.id !== movieId));
+  }, []);
+
+  // Enable recommendations mode with optional title
+  const setRecommendations = useCallback((active, title = "") => {
     setRecommendationsMode({ active, title });
   }, []);
 
-  // Clear recommendations mode
+  // Disable recommendations mode
   const clearRecommendations = useCallback(() => {
-    setRecommendationsMode({ active: false, title: '' });
+    setRecommendationsMode({ active: false, title: "" });
   }, []);
 
-  // Value provided by context
-  const value = {
-    favorites,
-    addToFavorites,
-    removeFromFavorites,
-    recommendationsMode,
-    setRecommendations,
-    clearRecommendations
-  };
-
   return (
-    <MovieContext.Provider value={value}>
+    <MovieContext.Provider
+      value={{
+        favorites,
+        addToFavorites,
+        removeFromFavorites,
+        recommendationsMode,
+        setRecommendations,
+        clearRecommendations,
+      }}
+    >
       {children}
     </MovieContext.Provider>
   );
